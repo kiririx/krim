@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+username<input id="username"></br>
+msg<input id="msg"></br>
+targetId<input id="targetId"></br>
+<button id="send" onclick="sendMsg()">send</button>
+<button id="conn" onclick="conn()">conn</button>
+</br>
+<input type="text" id="callback">
+</body>
+
+<script>
+    let socket = null
+
+    function sendMsg() {
+        if (socket == null) {
+            alert("socket is null")
+            return
+        }
+        const msg = document.getElementById('msg').value;
+        const targetId = document.getElementById('targetId').value;
+        socket.send("{\"targetId\":\"" + targetId + "\", \"msg\":\"" + msg + "\"}");
+    }
+
+    function conn() {
+        const username = document.getElementById('username').value;
+        if (!username) {
+            alert("username is null")
+            return
+        }
+        const url = "ws://101.43.168.250:19993/im?username="
+        // const url = "ws://101.43.168.250:19993/im?username="
+        socket = new WebSocket(url + username);
+        socket.addEventListener('open', function (event) {
+            // socket.send('Hello Server!');
+        });
+
+        // Listen for messages
+        socket.addEventListener('message', function (event) {
+            // console.log('Message from server ', event.data);
+            document.getElementById('callback').value = event.data;
+        });
+
+    }
+</script>
+</html>
