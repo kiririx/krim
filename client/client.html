@@ -20,7 +20,7 @@ targetId<input id="targetId"></br>
 
     function sendMsg() {
         if (socket == null) {
-            alert("socket is null")
+            alert("socket is null， 没建立连接呢")
             return
         }
         const msg = document.getElementById('msg').value;
@@ -39,6 +39,7 @@ targetId<input id="targetId"></br>
         socket = new WebSocket(url + username);
         socket.addEventListener('open', function (event) {
             // socket.send('Hello Server!');
+            alert('成功建立连接')
         });
 
         // Listen for messages
