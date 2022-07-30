@@ -1,7 +1,7 @@
 package callback
 
 import (
-	"github.com/kiririx/krim/constant"
+	"github.com/kiririx/krim/constx"
 	"github.com/kiririx/krim/module/resp"
 )
 
@@ -10,8 +10,8 @@ func SuccessData(data any) resp.Resp {
 		data = map[string]interface{}{}
 	}
 	result := &resp.Resp{
-		Status: constant.RespSuccessStr,
-		Code:   constant.RespSuccess,
+		Status: constx.RespSuccessStr,
+		Code:   constx.RespSuccess,
 		Data:   data,
 	}
 	return *result
@@ -19,7 +19,7 @@ func SuccessData(data any) resp.Resp {
 
 func Error(code int, msg string) resp.Resp {
 	result := resp.Resp{
-		Status: constant.RespFailStr,
+		Status: constx.RespFailStr,
 		ErrMsg: msg,
 		Code:   code,
 		Data:   map[string]interface{}{},
@@ -29,8 +29,8 @@ func Error(code int, msg string) resp.Resp {
 
 func Success() resp.Resp {
 	result := &resp.Resp{
-		Status: constant.RespSuccessStr,
-		Code:   constant.RespSuccess,
+		Status: constx.RespSuccessStr,
+		Code:   constx.RespSuccess,
 		Data:   map[string]interface{}{},
 	}
 	return *result
@@ -38,8 +38,8 @@ func Success() resp.Resp {
 
 func BackFail(msg string) resp.Resp {
 	result := &resp.Resp{
-		Status: constant.RespFailStr,
-		Code:   constant.RespFail,
+		Status: constx.RespFailStr,
+		Code:   constx.RespFail,
 		ErrMsg: msg,
 	}
 	return *result

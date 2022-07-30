@@ -7,8 +7,8 @@ create table t_passwords
     username    varchar(200)  null,
     password    varchar(1000) null,
     description varchar(1000) null,
-    createTime  mediumtext    null,
-    updateTime  mediumtext    null
+    created_at  mediumtext    null,
+    updated_at  mediumtext    null
 );
 
 create table t_users
@@ -17,7 +17,7 @@ create table t_users
         primary key,
     username   varchar(200)  not null,
     password   varchar(1000) not null,
-    createTime datetime    null,
-    updateTime datetime    null
+    created_at datetime    null,
+    updated_at datetime    null
 );
 

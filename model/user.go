@@ -2,10 +2,14 @@ package model
 
 type User struct {
 	BaseModel
-	UserName string
+	Username string
 	Password string
-	NickName string
+	Nickname string
 	Sex      uint
+}
+
+func (*User) TableName() string {
+	return "user"
 }
 
 type UserLogonLog struct {

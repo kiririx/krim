@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/kiririx/krim/conf"
-	"github.com/kiririx/krim/module/entity"
+	"github.com/kiririx/krim/model"
 	"github.com/kiririx/krutils/algox"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -12,8 +12,8 @@ import (
 type userService struct {
 }
 
-func (u *userService) QueryByUsername(username string) (*entity.User, error) {
-	var user entity.User
+func (u *userService) QueryByUsername(username string) (*model.User, error) {
+	var user model.User
 	tx := conf.Sqlx.Where("username = ?", username).Take(&user)
 	if err := tx.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -24,7 +24,7 @@ func (u *userService) QueryByUsername(username string) (*entity.User, error) {
 	return &user, nil
 }
 
-func (u *userService) Save(user *entity.User) bool {
+func (u *userService) Save(user *model.User) bool {
 	result := conf.Sqlx.Create(user)
 	if result.Error != nil {
 		log.Printf("%v", result.Error)
@@ -33,7 +33,7 @@ func (u *userService) Save(user *entity.User) bool {
 	return true
 }
 
-func (u *userService) Query(e *entity.User) any {
+func (u *userService) Query(e *model.User) any {
 	first := conf.Sqlx.First(e)
 	if errors.Is(first.Error, gorm.ErrRecordNotFound) {
 		return nil
@@ -44,7 +44,7 @@ func (u *userService) Query(e *entity.User) any {
 	return e
 }
 
-func (u *userService) Register(username string, password string) (*entity.User, error) {
+func (u *userService) Register(username string, password string) (*model.User, error) {
 	user, err := User.QueryByUsername(username)
 	if err != nil {
 		return nil, err
@@ -52,22 +52,24 @@ func (u *userService) Register(username string, password string) (*entity.User, 
 	if user != nil {
 		return nil, errors.New("用户已注册")
 	}
-	userEntity := &entity.User{
+	usermodel := &model.User{
 		Username: username,
 		Password: algox.MD5(password),
+		Nickname: "未命名",
+		Sex:      0,
 	}
-	tx := conf.Sqlx.Save(userEntity)
+	tx := conf.Sqlx.Save(usermodel)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 	if tx.RowsAffected < 1 {
 		return nil, errors.New("注册失败")
 	}
-	return userEntity, nil
+	return usermodel, nil
 }
 
 func (u *userService) Login(username string, password string) (string, error) {
-	var user entity.User
+	var user model.User
 	if err := conf.Sqlx.Where("username = ? and password = ?", username, algox.MD5(password)).Take(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return "", errors.New("用户不存在或密码错误")
@@ -75,4 +77,16 @@ func (u *userService) Login(username string, password string) (string, error) {
 		return "", err
 	}
 	return BuildToken(user.Id, user.Username)
+}
+
+func (u *userService) QueryById(userId uint64) (*model.User, error) {
+	var user model.User
+	tx := conf.Sqlx.Where("id = ?", userId).Take(&user)
+	if err := tx.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &user, nil
 }

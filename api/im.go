@@ -30,6 +30,7 @@ type WsClient struct {
 
 var ClientMap = make(map[string]*WsClient)
 
+// Conn uses the token to create a websocket connection
 func (i *im) Conn(c *gin.Context) {
 	token := httpx.GetQueryParam(c.Request.RequestURI, "token")
 	if token == "" {
@@ -50,12 +51,16 @@ func (i *im) Conn(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	// 注册到客户端map
+	// register client to client map, if the client is exists, then override it
 	if ClientMap[username] != nil {
 		_conn := ClientMap[username]
 		_conn.conn.Close()
 	}
 	ClientMap[username] = &WsClient{conn: conn}
+	ReceiveMessage(conn)
+}
+
+func ReceiveMessage(conn *websocket.Conn) {
 	for {
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
@@ -79,4 +84,17 @@ func (i *im) Conn(c *gin.Context) {
 			}
 		}
 	}
+}
+
+// SendMessage 发送消息
+func SendMessage(targetId string, message string) error {
+	tc := ClientMap[targetId]
+	if tc != nil {
+		err := tc.conn.WriteMessage(websocket.TextMessage, []byte(message))
+		if err != nil {
+			log.Println("error：", err)
+			return err
+		}
+	}
+	return nil
 }

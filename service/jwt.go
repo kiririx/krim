@@ -6,14 +6,14 @@ import (
 )
 
 type LocalClaims struct {
-	Id       uint   `json:"id"`
+	Id       uint64 `json:"id"`
 	Username string `json:"username"`
 	jwt.StandardClaims
 }
 
 var signKey = []byte("ichinisanshigorokunanahachikyu")
 
-func BuildToken(id uint, username string) (string, error) {
+func BuildToken(id uint64, username string) (string, error) {
 	claims := &LocalClaims{
 		Id:       id,
 		Username: username,
