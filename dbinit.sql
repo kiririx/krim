@@ -1,23 +1,24 @@
-create table t_passwords
-(
-    id          int auto_increment
-        primary key,
-    topic       varchar(1000) not null,
-    user_id     int           not null,
-    username    varchar(200)  null,
-    password    varchar(1000) null,
-    description varchar(1000) null,
-    created_at  mediumtext    null,
-    updated_at  mediumtext    null
-);
-
-create table t_users
+create table user
 (
     id         int auto_increment
         primary key,
     username   varchar(200)  not null,
     password   varchar(1000) not null,
-    created_at datetime    null,
-    updated_at datetime    null
+    nickname   varchar(200)  not null,
+    sex        int default 0 not null,
+    created_at datetime null,
+    updated_at datetime null
 );
 
+
+create table event
+(
+    id         int auto_increment
+        primary key,
+    created_at datetime null,
+    updated_at datetime null,
+    event_type int default 0 not null,
+    source_id  int default 0 not null,
+    target_id  int default 0 not null,
+    progress   int default 0 not null,
+)

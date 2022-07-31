@@ -17,7 +17,7 @@ func (u *userService) QueryByUsername(username string) (*model.User, error) {
 	tx := conf.Sqlx.Where("username = ?", username).Take(&user)
 	if err := tx.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
+			return nil, errors.New("用户不存在")
 		}
 		return nil, err
 	}
@@ -33,16 +33,16 @@ func (u *userService) Save(user *model.User) bool {
 	return true
 }
 
-func (u *userService) Query(e *model.User) any {
-	first := conf.Sqlx.First(e)
-	if errors.Is(first.Error, gorm.ErrRecordNotFound) {
-		return nil
-	}
-	if first.Error == gorm.ErrRecordNotFound {
-		return nil
-	}
-	return e
-}
+// func (u *userService) Query(e *model.User) any {
+// 	first := conf.Sqlx.First(e)
+// 	if errors.Is(first.Error, gorm.ErrRecordNotFound) {
+// 		return nil
+// 	}
+// 	if first.Error == gorm.ErrRecordNotFound {
+// 		return nil
+// 	}
+// 	return e
+// }
 
 func (u *userService) Register(username string, password string) (*model.User, error) {
 	user, err := User.QueryByUsername(username)
@@ -52,20 +52,20 @@ func (u *userService) Register(username string, password string) (*model.User, e
 	if user != nil {
 		return nil, errors.New("用户已注册")
 	}
-	usermodel := &model.User{
+	userModel := &model.User{
 		Username: username,
 		Password: algox.MD5(password),
 		Nickname: "未命名",
 		Sex:      0,
 	}
-	tx := conf.Sqlx.Save(usermodel)
+	tx := conf.Sqlx.Save(userModel)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
 	if tx.RowsAffected < 1 {
 		return nil, errors.New("注册失败")
 	}
-	return usermodel, nil
+	return userModel, nil
 }
 
 func (u *userService) Login(username string, password string) (string, error) {

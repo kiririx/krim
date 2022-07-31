@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kiririx/krim/constx"
 	"github.com/kiririx/krim/mapping"
 	"github.com/kiririx/krim/module/req"
 	"github.com/kiririx/krim/service"
@@ -17,14 +18,24 @@ func (*_ContactAPI) AddContact(ctx *gin.Context, param *req.AddContact) (any, er
 	return nil, nil
 }
 
-func (*_ContactAPI) GetContact(ctx *gin.Context, param *req.GetContact) (any, error) {
+func (*_ContactAPI) GetContact(ctx *APICtx, param *req.GetContact) (any, error) {
 	user, err := service.User.QueryByUsername(param.Username)
 	if err != nil {
 		return nil, err
 	}
-	return map[string]string{
+	return map[string]any{
+		"user_id":  user.Id,
 		"username": user.Username,
 		"nickname": user.Nickname,
 		"sex":      mapping.SexGet(user.Sex),
 	}, nil
+}
+
+// AddContactEvent add contact event
+func (*_ContactAPI) AddContactEvent(ctx *APICtx, param *req.AddContactEvent) (any, error) {
+	err := service.ContactService.AddContactEvent(ctx.UserId, param.TargetId, constx.EventAddContact)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }

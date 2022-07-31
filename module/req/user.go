@@ -18,3 +18,8 @@ type AddContact struct {
 type GetContact struct {
 	Username string `uri:"username" binding:"required"`
 }
+
+type AddContactEvent struct {
+	TargetId uint64 `json:"target_id"`
+	// EventType uint   `json:"event_type"`
+}

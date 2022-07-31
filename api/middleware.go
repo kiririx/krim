@@ -25,11 +25,13 @@ func CheckLogin(c *gin.Context) {
 	if token == "" {
 		c.JSON(http.StatusOK, callback.BackFail("权限不足"))
 		c.Abort()
+		return
 	}
 	userMeta, err := service.ValidToken(token)
 	if err != nil {
 		c.JSON(http.StatusOK, callback.BackFail("权限不足"))
 		c.Abort()
+		return
 	}
 	c.Set("userId", userMeta.Id)
 	c.Set("userName", userMeta.Username)

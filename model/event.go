@@ -7,3 +7,7 @@ type Event struct {
 	TargetId  uint64
 	Progress  uint // Progress 0: not processed 1: processed
 }
+
+func (*Event) TableName() string {
+	return "event"
+}

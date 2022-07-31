@@ -28,7 +28,7 @@ func BuildToken(id uint64, username string) (string, error) {
 }
 
 type UserMeta struct {
-	Id       uint
+	Id       uint64
 	Username string
 }
 
@@ -41,7 +41,7 @@ func ValidToken(tokenStr string) (*UserMeta, error) {
 	}
 	cl := token.Claims.(jwt.MapClaims)
 	return &UserMeta{
-		Id:       uint(cl["id"].(float64)),
+		Id:       uint64(cl["id"].(float64)),
 		Username: cl["username"].(string),
 	}, nil
 }
