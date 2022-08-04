@@ -6,4 +6,5 @@ type Message struct {
 	SourceId uint64
 	TargetId uint64
 	GroupId  uint64
+	Read     int
 }

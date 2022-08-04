@@ -1,13 +1,13 @@
 package api
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/kiririx/krim/service"
 	"github.com/kiririx/krim/util/callback"
+	"github.com/kiririx/krim/wsbus"
 	"github.com/kiririx/krutils/httpx"
-	"github.com/kiririx/krutils/jsonx"
-	"log"
 	"net/http"
 )
 
@@ -22,13 +22,6 @@ var upgrader = websocket.Upgrader{
 		return true
 	},
 }
-
-type WsClient struct {
-	conn *websocket.Conn
-	// uid  string
-}
-
-var ClientMap = make(map[string]*WsClient)
 
 // Conn uses the token to create a websocket connection
 func (i *im) Conn(c *gin.Context) {
@@ -52,49 +45,24 @@ func (i *im) Conn(c *gin.Context) {
 	defer conn.Close()
 
 	// register client to client map, if the client is exists, then override it
-	if ClientMap[username] != nil {
-		_conn := ClientMap[username]
-		_conn.conn.Close()
+	if wsbus.ClientMap[username] != nil {
+		_conn := wsbus.ClientMap[username]
+		_conn.Conn.Close()
 	}
-	ClientMap[username] = &WsClient{conn: conn}
-	ReceiveMessage(conn)
-}
-
-func ReceiveMessage(conn *websocket.Conn) {
-	for {
-		messageType, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		msgM, err := jsonx.JSON2Map(string(message))
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		targetUsername := msgM["targetId"].(string)
-		log.Printf("从客户端接收到了消息：%s", msgM)
-		log.Printf("从服务端写出了消息：%s", message)
-		tc := ClientMap[targetUsername]
-		if tc != nil {
-			err = ClientMap[targetUsername].conn.WriteMessage(messageType, []byte(msgM["msg"].(string)))
-			if err != nil {
-				log.Println("error：", err)
-				break
-			}
-		}
-	}
-}
-
-// SendMessage 发送消息
-func SendMessage(targetId string, message string) error {
-	tc := ClientMap[targetId]
-	if tc != nil {
-		err := tc.conn.WriteMessage(websocket.TextMessage, []byte(message))
-		if err != nil {
-			log.Println("error：", err)
-			return err
-		}
-	}
-	return nil
+	wsbus.ClientMap[username] = &wsbus.WsClient{Conn: conn, MsgChan: make(chan *wsbus.WsMessage)}
+	// go func() {
+	// 	for {
+	// 		wsMsg := <-wsbus.ClientMap[username].MsgChan
+	// 		if wsMsg != nil {
+	// 			err := wsbus.SendUserMessage(wsMsg.TargetId, wsMsg.Message)
+	// 			if err != nil {
+	// 				// return
+	// 				continue
+	// 			}
+	// 		}
+	//
+	// 	}
+	// }()
+	ctx, _ := context.WithCancel(c)
+	wsbus.ReceiveMessage(ctx, conn)
 }

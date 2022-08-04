@@ -9,4 +9,6 @@ var (
 	EventProgress uint = 0
 	// EventProcessed 已处理
 	EventProcessed uint = 1
+	// UserEvent 用户事件
+	UserEvent int64 = -1
 )

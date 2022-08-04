@@ -3,14 +3,15 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kiririx/krim/api"
+	"github.com/kiririx/krim/ctx"
 	"github.com/kiririx/krim/module/req"
 	"github.com/kiririx/krim/util/callback"
 	"github.com/kiririx/krutils/sugar"
 	"net/http"
 )
 
-func buildAPICtx(c *gin.Context) *api.APICtx {
-	return &api.APICtx{
+func buildAPICtx(c *gin.Context) *ctx.Ctx {
+	return &ctx.Ctx{
 		GinCtx: c,
 		UserId: func() uint64 {
 			userId, exists := c.Get("userId")
@@ -31,7 +32,7 @@ func buildAPICtx(c *gin.Context) *api.APICtx {
 	}
 }
 
-func POST[R any](g *gin.RouterGroup, path string, req *R, handler func(*api.APICtx, *R) (any, error), middlewares ...gin.HandlerFunc) {
+func POST[R any](g *gin.RouterGroup, path string, req *R, handler func(*ctx.Ctx, *R) (any, error), middlewares ...gin.HandlerFunc) {
 	mws := make([]gin.HandlerFunc, 0)
 	mws = append(mws, middlewares...)
 	mws = append(mws, func(c *gin.Context) {
@@ -40,19 +41,19 @@ func POST[R any](g *gin.RouterGroup, path string, req *R, handler func(*api.APIC
 	g.POST(path, mws...)
 }
 
-func GET[R any](g *gin.RouterGroup, path string, req *R, handler func(*api.APICtx, *R) (any, error)) {
+func GET[R any](g *gin.RouterGroup, path string, req *R, handler func(*ctx.Ctx, *R) (any, error)) {
 	g.GET(path, func(c *gin.Context) {
 		handle(buildAPICtx(c), req, handler)
 	})
 }
 
-func DELETE[R any](g *gin.RouterGroup, path string, req *R, handler func(*api.APICtx, *R) (any, error)) {
+func DELETE[R any](g *gin.RouterGroup, path string, req *R, handler func(*ctx.Ctx, *R) (any, error)) {
 	g.DELETE(path, func(c *gin.Context) {
 		handle(buildAPICtx(c), req, handler)
 	})
 }
 
-func handle[R any](ctx *api.APICtx, r R, f ...func(c *api.APICtx, r R) (any, error)) {
+func handle[R any](ctx *ctx.Ctx, r R, f ...func(c *ctx.Ctx, r R) (any, error)) {
 	c := ctx.GinCtx
 	for i, fc := range f {
 		if c.Request.Method == "GET" || c.Request.Method == "DELETE" {
@@ -67,11 +68,14 @@ func handle[R any](ctx *api.APICtx, r R, f ...func(c *api.APICtx, r R) (any, err
 				return
 			}
 		}
+		ctx.CreateTx()
 		v, err := fc(ctx, r)
 		if err != nil {
+			ctx.Fail(err.Error())
 			c.JSON(http.StatusOK, callback.Error(0, err.Error()))
 			return
 		}
+		ctx.Finish()
 		if i == len(f)-1 {
 			c.JSON(http.StatusOK, callback.SuccessData(v))
 		}
@@ -91,4 +95,8 @@ func SetupRouter(r *gin.Engine) {
 	// GET(contact, "/", &req.AddContact{}, api.ContactAPI.AddContact)
 	GET(contact, "/:username", &req.GetContact{}, api.ContactAPI.GetContact)
 	POST(contact, "/addUser", &req.AddContactEvent{}, api.ContactAPI.AddContactEvent, api.CheckLogin)
+
+	message := r.Group("/message")
+	POST(message, "/sendUser", &req.SendUserMessageReq{}, api.SendUserMessage)
+	POST(message, "/sendGroup", &req.SendGroupMessageReq{}, api.SendGroupMessage)
 }

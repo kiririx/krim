@@ -3,6 +3,8 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kiririx/krim/constx"
+	"github.com/kiririx/krim/ctx"
+	"github.com/kiririx/krim/logic"
 	"github.com/kiririx/krim/mapping"
 	"github.com/kiririx/krim/module/req"
 	"github.com/kiririx/krim/service"
@@ -18,7 +20,7 @@ func (*_ContactAPI) AddContact(ctx *gin.Context, param *req.AddContact) (any, er
 	return nil, nil
 }
 
-func (*_ContactAPI) GetContact(ctx *APICtx, param *req.GetContact) (any, error) {
+func (*_ContactAPI) GetContact(ctx *ctx.Ctx, param *req.GetContact) (any, error) {
 	user, err := service.User.QueryByUsername(param.Username)
 	if err != nil {
 		return nil, err
@@ -32,8 +34,8 @@ func (*_ContactAPI) GetContact(ctx *APICtx, param *req.GetContact) (any, error) 
 }
 
 // AddContactEvent add contact event
-func (*_ContactAPI) AddContactEvent(ctx *APICtx, param *req.AddContactEvent) (any, error) {
-	err := service.ContactService.AddContactEvent(ctx.UserId, param.TargetId, constx.EventAddContact)
+func (*_ContactAPI) AddContactEvent(ctx *ctx.Ctx, param *req.AddContactEvent) (any, error) {
+	err := logic.ContactLogic.AddContactEvent(ctx, ctx.UserId, param.TargetId, constx.EventAddContact)
 	if err != nil {
 		return nil, err
 	}

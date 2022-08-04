@@ -23,3 +23,16 @@ type AddContactEvent struct {
 	TargetId uint64 `json:"target_id"`
 	// EventType uint   `json:"event_type"`
 }
+
+type SendUserMessageReq struct {
+	TargetId uint64
+	Message  string
+}
+
+type SendGroupMessageReq struct {
+	GroupId uint64
+	Message string
+}
+
+type EventReq struct {
+}
