@@ -35,6 +35,10 @@ func (c *Ctx) Finish() {
 	}
 }
 
+func (c *Ctx) CommitTx() {
+	c.Tx.Commit()
+}
+
 func (c *Ctx) CreateTx() {
 	c.Tx = sqlx.Transaction()
 }

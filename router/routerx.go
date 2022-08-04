@@ -75,6 +75,7 @@ func handle[R any](ctx *ctx.Ctx, r R, f ...func(c *ctx.Ctx, r R) (any, error)) {
 			c.JSON(http.StatusOK, callback.Error(0, err.Error()))
 			return
 		}
+		ctx.CommitTx()
 		ctx.Finish()
 		if i == len(f)-1 {
 			c.JSON(http.StatusOK, callback.SuccessData(v))

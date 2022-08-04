@@ -8,6 +8,7 @@ import (
 	"github.com/kiririx/krim/util/callback"
 	"github.com/kiririx/krim/wsbus"
 	"github.com/kiririx/krutils/httpx"
+	"github.com/kiririx/krutils/strx"
 	"net/http"
 )
 
@@ -35,7 +36,7 @@ func (i *im) Conn(c *gin.Context) {
 		c.JSON(http.StatusOK, callback.Error(0, err.Error()))
 		return
 	}
-	username := userMeta.Username
+	userId := strx.ToStr(userMeta.Id)
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
@@ -45,11 +46,11 @@ func (i *im) Conn(c *gin.Context) {
 	defer conn.Close()
 
 	// register client to client map, if the client is exists, then override it
-	if wsbus.ClientMap[username] != nil {
-		_conn := wsbus.ClientMap[username]
+	if wsbus.ClientMap[userId] != nil {
+		_conn := wsbus.ClientMap[userId]
 		_conn.Conn.Close()
 	}
-	wsbus.ClientMap[username] = &wsbus.WsClient{Conn: conn, MsgChan: make(chan *wsbus.WsMessage)}
+	wsbus.ClientMap[userId] = &wsbus.WsClient{Conn: conn, MsgChan: make(chan *wsbus.WsMessage)}
 	// go func() {
 	// 	for {
 	// 		wsMsg := <-wsbus.ClientMap[username].MsgChan

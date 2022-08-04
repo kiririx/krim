@@ -6,7 +6,6 @@ import (
 	"github.com/kiririx/krim/env"
 	"github.com/kiririx/krutils/logx"
 	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
@@ -26,22 +25,16 @@ func initDataBase() *sql.DB {
 	db := os.Getenv(env.DB)
 	logx.INFO("current db is: " + db)
 	var dial gorm.Dialector
-	if db == "" || db == "sqlite" {
-		dial = sqlite.Open("./data/sensitive.db")
-	} else if db == "mysql" {
-		dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?loc=Local&timeout=5s&charset=utf8mb4&collation=utf8mb4_unicode_ci&interpolateParams=true&parseTime=true&loc=Local",
-			os.Getenv("db_username"), os.Getenv("db_password"), os.Getenv("db_host"), os.Getenv("db_port"), os.Getenv("db_database"))
-		dial = mysql.Open(dsn)
-	} else {
-		panic("db not validate")
-	}
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?loc=Local&timeout=5s&charset=utf8mb4&collation=utf8mb4_unicode_ci&interpolateParams=true&parseTime=true&loc=Local",
+		os.Getenv("db_username"), os.Getenv("db_password"), os.Getenv("db_host"), os.Getenv("db_port"), os.Getenv("db_database"))
+	dial = mysql.Open(dsn)
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer（日志输出的目标，前缀和日志包含的内容——译者注）
 		logger.Config{
 			SlowThreshold:             time.Second, // 慢 SQL 阈值
 			LogLevel:                  logger.Info, // 日志级别
-			IgnoreRecordNotFoundError: true,        // 忽略ErrRecordNotFound（记录未找到）错误
-			Colorful:                  false,       // 禁用彩色打印
+			IgnoreRecordNotFoundError: true,        // 忽略Err1RecordNotFound（记录未找到）错误
+			// Colorful:                  false,       // 禁用彩色打印
 		},
 	)
 	Sqlx, err = gorm.Open(dial, &gorm.Config{

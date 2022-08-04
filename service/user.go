@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/kiririx/krim/conf"
+	"github.com/kiririx/krim/constx"
 	"github.com/kiririx/krim/model"
 	"github.com/kiririx/krutils/algox"
 	"github.com/pkg/errors"
@@ -17,7 +18,7 @@ func (u *userService) QueryByUsername(username string) (*model.User, error) {
 	tx := conf.Sqlx.Where("username = ?", username).Take(&user)
 	if err := tx.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, errors.New("用户不存在")
+			return nil, constx.DBRecordNotFound
 		}
 		return nil, err
 	}
@@ -46,7 +47,7 @@ func (u *userService) Save(user *model.User) bool {
 
 func (u *userService) Register(username string, password string) (*model.User, error) {
 	user, err := User.QueryByUsername(username)
-	if err != nil {
+	if err != nil && !errors.Is(err, constx.DBRecordNotFound) {
 		return nil, err
 	}
 	if user != nil {

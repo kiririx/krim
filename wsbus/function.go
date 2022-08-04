@@ -13,9 +13,6 @@ import (
 
 func ReceiveMessage(ctx context.Context, conn *websocket.Conn) {
 	for {
-		if _, ok := <-ctx.Done(); !ok {
-			return
-		}
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
