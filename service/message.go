@@ -22,3 +22,13 @@ func (*messageService) SaveUserMessage(ctx *ctx.Ctx, sourceId, targetId uint64, 
 	}
 	return &messageModel, nil
 }
+
+// QueryBySourceIdAndTargetIdAndMsgType 通过sourceId和targetId获取message
+func (*messageService) QueryBySourceIdAndTargetIdAndMsgType(ctx *ctx.Ctx, sourceId, targetId uint64) ([]model.Message, error) {
+	messageModels := make([]model.Message, 0)
+	err := ctx.SqlCtl().Where("source_id = ? and target_id = ?", sourceId, targetId).Find(&messageModels).Error
+	if err != nil {
+		return nil, err
+	}
+	return messageModels, nil
+}

@@ -29,6 +29,14 @@ func buildAPICtx(c *gin.Context) *ctx.Ctx {
 				return ""
 			})
 		}(),
+		NickName: func() string {
+			username, exists := c.Get("nickName")
+			return sugar.ThenFunc(exists, func() string {
+				return username.(string)
+			}, func() string {
+				return ""
+			})
+		}(),
 	}
 }
 

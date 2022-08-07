@@ -12,8 +12,8 @@ var ContactLogic = &contactLogic{}
 type contactLogic struct {
 }
 
-func (*contactLogic) AddContactEvent(ctx *ctx.Ctx, sourceId, targetId uint64, event uint) error {
-	err := service.ContactService.AddContactEvent(ctx, sourceId, targetId, event)
+func (*contactLogic) AddContactEvent(ctx *ctx.Ctx, sourceId, targetId uint64, eventType uint) error {
+	err := service.ContactService.AddContactEvent(ctx, sourceId, targetId, eventType)
 	if err != nil {
 		return err
 	}
@@ -21,7 +21,12 @@ func (*contactLogic) AddContactEvent(ctx *ctx.Ctx, sourceId, targetId uint64, ev
 	if err != nil {
 		return err
 	}
-	err = wsbus.SendUserMessage(ctx, sourceId, targetId, fmt.Sprintf("%v请求添加您为好友", user.Nickname))
+	msg := fmt.Sprintf("%v请求添加您为好友", user.Nickname)
+	eventM, err := service.EventService.GetBySourceIdAndTargetIdAndType(ctx, sourceId, targetId, eventType)
+	if err != nil {
+		return err
+	}
+	err = wsbus.SendUserMessage(ctx, sourceId, targetId, msg, eventM.CreatedAt)
 	if err != nil {
 		return err
 	}

@@ -12,6 +12,7 @@ type Ctx struct {
 	GinCtx   *gin.Context
 	UserId   uint64
 	UserName string
+	NickName string
 	Tx       *sqlx.Tx
 }
 

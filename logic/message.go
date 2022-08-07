@@ -15,11 +15,11 @@ type messageLogic struct {
 //
 // 先保存到数据库，再发送到ws客户端
 func (*messageLogic) SendUserMessage(ctx *ctx.Ctx, sourceId, targetId uint64, message string) error {
-	_, err := service.MessageService.SaveUserMessage(ctx, sourceId, targetId, message)
+	messageM, err := service.MessageService.SaveUserMessage(ctx, sourceId, targetId, message)
 	if err != nil {
 		return err
 	}
-	err = wsbus.SendUserMessage(ctx, sourceId, targetId, message)
+	err = wsbus.SendUserMessage(ctx, sourceId, targetId, message, messageM.CreatedAt)
 	if err != nil {
 		return err
 	}
