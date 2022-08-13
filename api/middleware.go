@@ -37,7 +37,7 @@ func CheckLogin(c *gin.Context) {
 	c.Set("userName", userMeta.Username)
 	c.Set("nickName", func() string {
 		if userMeta != nil && userMeta.Id > 0 {
-			user, err := service.User.QueryById(userMeta.Id)
+			user, err := service.UserService.QueryById(userMeta.Id)
 			if err != nil {
 				return ""
 			}

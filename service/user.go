@@ -34,7 +34,7 @@ func (u *userService) Save(user *model.User) bool {
 	return true
 }
 
-// func (u *userService) Query(e *model.User) any {
+// func (u *userService) Query(e *model.UserService) any {
 // 	first := conf.Sqlx.First(e)
 // 	if errors.Is(first.Error, gorm.ErrRecordNotFound) {
 // 		return nil
@@ -44,30 +44,6 @@ func (u *userService) Save(user *model.User) bool {
 // 	}
 // 	return e
 // }
-
-func (u *userService) Register(username string, password string) (*model.User, error) {
-	user, err := User.QueryByUsername(username)
-	if err != nil && !errors.Is(err, constx.DBRecordNotFound) {
-		return nil, err
-	}
-	if user != nil {
-		return nil, errors.New("用户已注册")
-	}
-	userModel := &model.User{
-		Username: username,
-		Password: algox.MD5(password),
-		Nickname: "未命名",
-		Sex:      0,
-	}
-	tx := conf.Sqlx.Save(userModel)
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-	if tx.RowsAffected < 1 {
-		return nil, errors.New("注册失败")
-	}
-	return userModel, nil
-}
 
 func (u *userService) Login(username string, password string) (string, error) {
 	var user model.User

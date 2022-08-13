@@ -10,6 +10,7 @@ create table user
     updated_at datetime null
 );
 
+alter table user add constraint cst_username UNIQUE (username);
 
 create table event
 (

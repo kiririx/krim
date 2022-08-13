@@ -21,7 +21,7 @@ func (*_ContactAPI) AddContact(ctx *gin.Context, param *req.AddContact) (any, er
 }
 
 func (*_ContactAPI) GetContact(ctx *ctx.Ctx, param *req.GetContact) (any, error) {
-	user, err := service.User.QueryByUsername(param.Username)
+	user, err := service.UserService.QueryByUsername(param.Username)
 	if err != nil {
 		return nil, err
 	}

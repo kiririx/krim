@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/kiririx/krim/conf"
 	"github.com/kiririx/krim/router"
+	_ "github.com/kiririx/krim/systemx"
 	"runtime"
 )
 

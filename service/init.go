@@ -1,6 +1,5 @@
 package service
 
 var (
-	Password = &passwordService{}
-	User     = &userService{}
+	UserService = &userService{}
 )
