@@ -1,21 +1,21 @@
 module github.com/kiririx/krim
 
-go 1.18
+go 1.19
 
 require github.com/gorilla/websocket v1.5.0
 
 require (
 	github.com/gin-contrib/static v0.0.1
+	github.com/go-redis/redis/v9 v9.0.0-beta.2
 	github.com/kiririx/krutils v1.0.0
 	github.com/pkg/errors v0.9.1
-	gorm.io/driver/sqlite v1.3.6
 )
 
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/go-redis/redis/v9 v9.0.0-beta.2 // indirect
-	github.com/mattn/go-sqlite3 v1.14.12 // indirect
+	github.com/fatih/color v1.13.0 // indirect
+	github.com/mattn/go-colorable v0.1.9 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 )
 

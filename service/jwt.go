@@ -22,7 +22,6 @@ func BuildToken(id uint64, username string) (string, error) {
 			Issuer:    "admin",
 		},
 	}
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(signKey)
 }
