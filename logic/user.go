@@ -2,9 +2,8 @@ package logic
 
 import (
 	"errors"
-	"github.com/kiririx/krim/conf"
 	"github.com/kiririx/krim/constx"
-	"github.com/kiririx/krim/model"
+	"github.com/kiririx/krim/repo/model"
 	"github.com/kiririx/krim/service"
 	"github.com/kiririx/krutils/algox"
 )
@@ -15,7 +14,7 @@ type userLogic struct {
 }
 
 func (u *userLogic) ReRegister(username, nickname, password string) (*model.User, error) {
-	err := conf.Sqlx.Where("username = ?", username).Delete(&model.User{}).Error
+	err := service.UserService.DeleteByUserName(username)
 	if err != nil {
 		return nil, err
 	}
@@ -36,12 +35,10 @@ func (u *userLogic) Register(username, nickname, password string) (*model.User, 
 		Nickname: nickname,
 		Sex:      0,
 	}
-	tx := conf.Sqlx.Save(userModel)
-	if tx.Error != nil {
-		return nil, tx.Error
+	err = service.UserService.Save(userModel)
+	if err != nil {
+		return nil, err
 	}
-	if tx.RowsAffected < 1 {
-		return nil, errors.New("注册失败")
-	}
+
 	return userModel, nil
 }

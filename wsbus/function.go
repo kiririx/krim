@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/kiririx/krim/conf"
 	"github.com/kiririx/krim/ctx"
-	"github.com/kiririx/krim/model"
+	"github.com/kiririx/krim/repo/model"
 	"github.com/kiririx/krutils/jsonx"
 	"github.com/kiririx/krutils/strx"
 	"github.com/kiririx/krutils/sugar"

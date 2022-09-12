@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/kiririx/krim/ctx"
-	"github.com/kiririx/krim/model"
+	"github.com/kiririx/krim/repo/model"
 )
 
 var MessageService = &messageService{}

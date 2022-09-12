@@ -2,7 +2,15 @@ module github.com/kiririx/krim
 
 go 1.19
 
+replace (
+	github.com/kiririx/amasugi  => ../amasugi
+)
+
 require github.com/gorilla/websocket v1.5.0
+
+require (
+	github.com/kiririx/amasugi v1.0.0
+)
 
 require (
 	github.com/gin-contrib/static v0.0.1

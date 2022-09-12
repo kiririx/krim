@@ -17,7 +17,7 @@ import (
 var Sqlx *gorm.DB
 
 func init() {
-	initDataBase()
+	// initDataBase()
 }
 
 func initDataBase() *sql.DB {

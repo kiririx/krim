@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/kiririx/krim/constx"
 	"github.com/kiririx/krim/ctx"
-	"github.com/kiririx/krim/model"
+	"github.com/kiririx/krim/repo/model"
 )
 
 var ContactService = &contactService{}
